@@ -59,7 +59,8 @@
     return { id: snap.id, name: data.name, state: data.state };
   }
 
-  // Autosave: atualiza o estado de um documento já existente (não cria versão nova)
+  // Atualiza o estado de um documento já existente (não cria versão nova). Não é mais
+  // usada automaticamente — fica disponível caso seja útil no futuro.
   async function updateOrganograma(id, state){
     await updateDoc(doc(db, COLLECTION_NAME, id), {
       state: state,
@@ -146,7 +147,7 @@ body { font-family: Arial, sans-serif; background: #e8e8e8; color: #333; }
 /* ── CARDS ── */
 .card {
   position: absolute; border-radius: 18px; padding: 6px 12px; text-align: center;
-  cursor: grab; user-select: none; width: 130px; min-height: 46px;
+  cursor: grab; user-select: none; width: 130px; box-sizing: border-box;
   display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2;
 }
 .card:hover { filter: brightness(.93); }
@@ -166,6 +167,11 @@ body { font-family: Arial, sans-serif; background: #e8e8e8; color: #333; }
 .card.tc-black .cn { color:#333 !important; } .card.tc-black .cr { color:#777 !important; } .card.tc-black .ce { color:#555 !important; }
 .card.tc-white .cn { color:#fff !important; } .card.tc-white .cr { color:rgba(255,255,255,.8) !important; } .card.tc-white .ce { color:rgba(255,255,255,.85) !important; }
 .card.dragging-src { opacity: .25; pointer-events: none; }
+/* Todo cartão (sem atividades) tem SEMPRE a mesma altura — o texto trunca com "…"
+   em vez de esticar a caixa, para que caixas com pouco texto e caixas com
+   cargo/nome/empresa preenchidos fiquem todas do mesmo tamanho. */
+.card .cn { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; width: 100%; }
+.card .cr, .card .ce { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden; width: 100%; }
 
 /* ── Lista de atividades dentro do cartão ── */
 .card .cat { list-style:none; margin:3px 0 0; padding:3px 0 0; border-top:1px solid rgba(0,0,0,.12); width:100%; }
@@ -312,7 +318,8 @@ body { font-family: Arial, sans-serif; background: #e8e8e8; color: #333; }
     <button class="tb" style="background:#6c3483;color:#fff;border-color:#5b2c6f;" onclick="toggleDropdown('dd-custos',event)">📁 Eng Custos ▾</button>
     <div class="dd-menu" id="dd-custos">
       <button onclick="closeDropdowns();openFbOpen()">📂 Abrir revisão</button>
-      <button onclick="closeDropdowns();openFbSave()">☁ Salvar revisão</button>
+      <button onclick="closeDropdowns();openFbSave()">☁ Salvar nova revisão</button>
+      <button onclick="closeDropdowns();updateCurrentRevision()">💾 Salvar atualização</button>
       <div class="dd-sep"></div>
       <button onclick="closeDropdowns();var fi=document.getElementById('fi');fi.value='';fi.click();">⬆ Importar JSON</button>
       <button onclick="closeDropdowns();doExport()">⬇ Salvar JSON</button>
@@ -524,7 +531,7 @@ body { font-family: Arial, sans-serif; background: #e8e8e8; color: #333; }
 
 <script>
 // ── Constants ──
-const NW=130, NH=46;
+const NW=130, NH=70;
 // Altura extra por atividade listada na caixa (a caixa cresce conforme necessário)
 const AT_LINE_H=11, AT_PAD=6;
 function actCount(n){ if(typeof n==='string'){ const f=nodes.find(x=>x.id===n); n=f; } return (n&&Array.isArray(n.atividades))?n.atividades.length:0; }
@@ -947,7 +954,8 @@ function render(){
 
     const card=document.createElement('div');
     card.className=`card ${cls}${tcCls}${n.id===sel?' sel':''}`;
-    card.style.cssText=`position:absolute;left:0;top:0;width:${NW}px;${bg}`;
+    card.style.cssText=`position:absolute;left:0;top:0;width:${NW}px;height:${nH}px;${bg}`;
+    card.title=[n.role,n.name,n.empresa].filter(Boolean).join(' — ');
     card.innerHTML=`<div class="cn">${top}</div>${bot}${atList}`;
     card.dataset.nid=n.id;
     card.dataset.tc=n.textColor||'auto';
@@ -1008,13 +1016,17 @@ function render(){
     cvs.appendChild(cb);
   });
 
-  // ── Auto-correção: mede a altura REAL de cada caixa (o texto pode quebrar linha)
-  // e, se diferente da estimativa usada no layout, corrige e refaz o desenho ──
+  // ── Auto-correção: só se aplica a cargos com lista de atividades, cujo item
+  // pode quebrar linha e precisar de mais espaço do que a fórmula estimou.
+  // Cargos "normais" (sem atividades) têm SEMPRE a altura fixa NH — o texto
+  // trunca com "…" em vez de esticar a caixa (ver CSS .cn/.cr/.ce) — por isso
+  // não entram nessa correção, e todas as caixas ficam do mesmo tamanho.
   let heightChanged=false;
   nodes.forEach(n=>{
+    if(!actCount(n)) return;
     const cardEl=cvs.querySelector('.card[data-nid="'+n.id+'"]');
     if(!cardEl) return;
-    const measured=cardEl.offsetHeight;
+    const measured=cardEl.scrollHeight;
     const expected=H(n);
     if(measured>0 && Math.abs(measured-expected)>2){
       heightCache[n.id]=measured;
@@ -1712,7 +1724,7 @@ function exportPNG(){
 // ── IMPORT / EXPORT ──
 // Estado "puro" dos dados (sem timestamp), usado para export local E para o Firebase.
 // Fica estável entre chamadas quando nada mudou de fato — isso é o que permite ao
-// autosave comparar "mudou ou não mudou" sem disparar gravações desnecessárias.
+// o Firebase saber comparar "mudou ou não mudou" ao sincronizar em tempo real.
 function getStateSnapshot(){
   return {nodes,activeLinks:[...links],company,project,nodeDir,globalDir,classifications,cfg:{lc:LC(),lw:LW()}};
 }
@@ -1771,27 +1783,28 @@ function doImport(e){
   r.readAsText(file,'UTF-8');
 }
 
-// ── FIREBASE: VERSÕES + AUTOSAVE + TEMPO REAL (coleção "organograma") ──
-// currentDocId = qual documento do Firestore está "aberto" agora. Enquanto ele existir:
-//  - toda edição na tela agenda uma gravação automática nele (autosave, debounced)
-//  - um listener em tempo real aplica na tela qualquer mudança feita por outra aba/pessoa
+// ── FIREBASE: VERSÕES (coleção "organograma") ──
+// currentDocId = qual documento do Firestore está "aberto" agora.
+// O salvamento SÓ acontece quando o usuário clica em "☁ Salvar nova revisão" ou
+// "💾 Salvar atualização" —
+// não há mais gravação automática em segundo plano a cada edição.
 let currentDocId=null, currentDocName=null;
-let lastSyncedStateJSON=null;   // último estado conhecido em comum com o Firestore (evita gravações/loops desnecessários)
-let unsubscribeSnapshot=null;   // função para parar de "escutar" o documento anterior ao trocar de versão
-let autosaveTimer=null;
-let suppressAutosave=false;     // true enquanto aplicamos um estado que já VEIO do Firestore
+let lastSyncedStateJSON=null;   // último estado conhecido em comum com o Firestore
 
 function setSyncStatus(state){
   const el=document.getElementById('sync-status');
   if(!el) return;
   const nm=currentDocName?esc(currentDocName):'';
-  if(state==='synced')      el.innerHTML='🟢 <b>'+nm+'</b> · sincronizado';
-  else if(state==='pending')el.innerHTML='🟡 <b>'+nm+'</b> · salvando...';
-  else if(state==='error')  el.innerHTML='🔴 <b>'+nm+'</b> · erro ao sincronizar';
+  if(state==='synced')      el.innerHTML='🟢 <b>'+nm+'</b> · salvo';
+  else if(state==='dirty')  el.innerHTML='🟡 <b>'+nm+'</b> · alterações não salvas';
+  else if(state==='error')  el.innerHTML='🔴 <b>'+nm+'</b> · erro ao salvar';
   else                      el.innerHTML='<span style="color:#999;">nenhuma revisão aberta</span>';
 }
 
-// Passa a "seguir" um documento: para de escutar o anterior e começa a escutar o novo
+// Passa a "seguir" um documento em tempo real: se outra pessoa/aba salvar uma
+// alteração nessa mesma revisão, ela aparece aqui automaticamente. Isso é só
+// LEITURA — não grava nada, então não tem relação com o autosave removido.
+let unsubscribeSnapshot=null;
 function watchCurrentDoc(){
   if(unsubscribeSnapshot){ unsubscribeSnapshot(); unsubscribeSnapshot=null; }
   if(!currentDocId || !window.__fb) return;
@@ -1799,33 +1812,29 @@ function watchCurrentDoc(){
     const json=JSON.stringify(data.state);
     if(json===lastSyncedStateJSON) return; // é o eco da nossa própria gravação, ou nada mudou
     lastSyncedStateJSON=json;
-    suppressAutosave=true;
-    try{ applyImportedState(data.state); } finally { suppressAutosave=false; }
+    applyImportedState(data.state);
     setSyncStatus('synced');
     toast('Organograma atualizado em tempo real ✓');
   });
 }
 
-function scheduleAutosave(){
-  if(suppressAutosave) return;
-  if(!currentDocId || !window.__fb) return;
-  setSyncStatus('pending');
-  clearTimeout(autosaveTimer);
-  autosaveTimer=setTimeout(doAutosave, 1200);
-}
-
-async function doAutosave(){
-  if(!currentDocId || !window.__fb) return;
-  const state=getStateSnapshot();
-  const json=JSON.stringify(state);
-  if(json===lastSyncedStateJSON){ setSyncStatus('synced'); return; }
+// Grava as alterações na revisão JÁ ABERTA, sem criar uma nova (sobrescreve o
+// mesmo documento no Firestore). Diferente de "Salvar nova revisão", que sempre
+// cria um documento novo e nomeado.
+async function updateCurrentRevision(){
+  if(!nodes.length){ toast('Organograma vazio, nada para salvar.'); return; }
+  if(!currentDocId){ toast('Nenhuma revisão aberta — use "Abrir revisão" ou "Salvar nova revisão" primeiro.'); return; }
+  if(!window.__fb){ toast('Firebase ainda não carregou. Tente novamente em instantes.'); return; }
   try{
+    const state=getStateSnapshot();
     await window.__fb.updateOrganograma(currentDocId, state);
-    lastSyncedStateJSON=json;
+    lastSyncedStateJSON=JSON.stringify(state);
     setSyncStatus('synced');
+    toast('Revisão "'+currentDocName+'" atualizada! ✓');
   }catch(err){
-    console.error('Erro no autosave:', err);
+    console.error('Erro ao atualizar revisão:', err);
     setSyncStatus('error');
+    toast('Erro ao salvar atualização: '+(err.message||err));
   }
 }
 
@@ -1839,7 +1848,8 @@ function openFbSave(){
 function closeFbSave(){ document.getElementById('fbsave-ov').classList.remove('on'); }
 
 // Cria uma NOVA revisão nomeada (novo documento). A partir daqui, essa revisão passa a
-// ser a "aberta": autosave e tempo real passam a valer para ela.
+// ser a "aberta" (aparece no status de sincronização e passa a receber atualizações
+// em tempo real de outras abas/pessoas). O salvamento continua manual.
 async function confirmFbSave(){
   const nameEl=document.getElementById('fbsave-name');
   const name=nameEl.value.trim();
@@ -1854,7 +1864,7 @@ async function confirmFbSave(){
     watchCurrentDoc();
     setSyncStatus('synced');
     closeFbSave();
-    toast('Revisão "'+name+'" criada! Agora ela salva sozinha e em tempo real. ✓');
+    toast('Revisão "'+name+'" salva! ✓');
   }catch(err){
     console.error('Erro ao salvar no Firebase:', err);
     document.getElementById('fbsave-hint').textContent='Erro ao salvar: '+(err.message||err);
@@ -1929,19 +1939,20 @@ async function confirmFbRename(){
   }
 }
 
-// Abre uma revisão existente: carrega os dados, e passa a autosalvar/sincronizar nela
+// Abre uma revisão existente: carrega os dados e passa a "seguir" essa revisão.
+// O salvamento continua manual — use "💾 Salvar atualização" para gravar alterações
+// nesta mesma revisão, ou "☁ Salvar nova revisão" para criar uma revisão nova.
 async function loadFbDoc(id){
   if(!window.__fb) return;
   try{
     const d=await window.__fb.getOrganograma(id);
     if(!d){ toast('Revisão não encontrada.'); return; }
-    suppressAutosave=true;
-    try{ applyImportedState(d.state); } finally { suppressAutosave=false; }
+    applyImportedState(d.state);
     currentDocId=d.id; currentDocName=d.name; lastSyncedStateJSON=JSON.stringify(d.state);
     watchCurrentDoc();
     setSyncStatus('synced');
     closeFbOpen();
-    toast('Revisão "'+d.name+'" aberta — salvando automaticamente a partir de agora. ✓');
+    toast('Revisão "'+d.name+'" aberta. Use "💾 Salvar atualização" para gravar alterações. ✓');
   }catch(err){
     console.error('Erro ao carregar documento:', err);
     toast('Erro ao carregar revisão: '+(err.message||err));
@@ -1970,18 +1981,6 @@ function toggleDropdown(id,ev){
 document.addEventListener('click', function(e){
   if(!e.target.closest('.dd')) closeDropdowns();
 });
-
-// Toda chamada a render() no app inteiro passa a também agendar o autosave no Firebase
-// (quando houver uma revisão aberta). Isso evita ter que "avisar" manualmente cada
-// função de edição (adicionar/remover cargo, arrastar, editar texto, etc.) — todas elas
-// já chamam render() ao final, então o autosave fica coberto automaticamente.
-(function(){
-  const _origRender=render;
-  render=function(){
-    _origRender.apply(this,arguments);
-    scheduleAutosave();
-  };
-})();
 
 // ── SAVE HTML (self-contained, fully editable) ──
 function saveHTML(){
