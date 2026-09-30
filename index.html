@@ -146,37 +146,40 @@ body { font-family: Arial, sans-serif; background: #e8e8e8; color: #333; }
 
 /* ── CARDS ── */
 .card {
-  position: absolute; border-radius: 18px; padding: 6px 12px; text-align: center;
-  cursor: grab; user-select: none; width: 130px; box-sizing: border-box;
+  position: absolute; border-radius: 18px; padding: 6px 10px; text-align: center;
+  cursor: grab; user-select: none; width: 170px; box-sizing: border-box;
   display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2;
 }
 .card:hover { filter: brightness(.93); }
 .card.sel { outline: 3px solid #1e42b0; outline-offset: 2px; }
 .card.green { background: #6aba3a; border: 1.5px solid #4a9020; }
-.card.green .cn { font-size: 11px; font-weight: 700; color: #fff; line-height: 1.3; }
-.card.green .cr { font-size: 9.5px; font-weight: 400; color: rgba(255,255,255,.8); line-height: 1.2; font-style: italic; }
+.card.green .cn { font-size: 17px; font-weight: 700; color: #fff; line-height: 1.25; }
+.card.green .cr { font-size: 16px; font-weight: 600; color: #fff; line-height: 1.2; font-style: normal; }
 .card.gray  { background: #e0e0e0; border: 1.5px solid #aaa; }
-.card.gray  .cn { font-size: 11px; font-weight: 600; color: #333; line-height: 1.3; }
-.card.gray  .cr { font-size: 9.5px; font-weight: 400; color: #777; line-height: 1.2; font-style: italic; }
+.card.gray  .cn { font-size: 17px; font-weight: 600; color: #333; line-height: 1.25; }
+.card.gray  .cr { font-size: 16px; font-weight: 600; color: #333; line-height: 1.2; font-style: normal; }
 .card.yellow { border: 1.5px solid #c9a800; }
-.card.yellow .cn { font-size: 11px; font-weight: 700; color: #222; line-height: 1.3; }
-.card.yellow .cr { font-size: 9.5px; font-weight: 400; color: #444; line-height: 1.2; font-style: italic; }
-.card.green .ce { font-size: 10px; font-weight: 600; color: rgba(255,255,255,.85); line-height: 1.2; margin-top: 1px; }
-.card.gray  .ce { font-size: 10px; font-weight: 600; color: #555; line-height: 1.2; margin-top: 1px; }
-.card.yellow .ce { font-size: 10px; font-weight: 600; color: #333; line-height: 1.2; margin-top: 1px; }
-.card.tc-black .cn { color:#333 !important; } .card.tc-black .cr { color:#777 !important; } .card.tc-black .ce { color:#555 !important; }
-.card.tc-white .cn { color:#fff !important; } .card.tc-white .cr { color:rgba(255,255,255,.8) !important; } .card.tc-white .ce { color:rgba(255,255,255,.85) !important; }
+.card.yellow .cn { font-size: 17px; font-weight: 700; color: #222; line-height: 1.25; }
+.card.yellow .cr { font-size: 16px; font-weight: 600; color: #222; line-height: 1.2; font-style: normal; }
+.card.green .ce { font-size: 14px; font-weight: 600; color: rgba(255,255,255,.85); line-height: 1.2; margin-top: 1px; }
+.card.gray  .ce { font-size: 14px; font-weight: 600; color: #555; line-height: 1.2; margin-top: 1px; }
+.card.yellow .ce { font-size: 14px; font-weight: 600; color: #333; line-height: 1.2; margin-top: 1px; }
+.card.tc-black .cn { color:#333 !important; }  .card.tc-black .ce { color:#555 !important; }
+.card.tc-white .cn { color:#fff !important; }  .card.tc-white .ce { color:rgba(255,255,255,.85) !important; }
 .card.dragging-src { opacity: .25; pointer-events: none; }
 /* Todo cartão (sem atividades) tem SEMPRE a mesma altura — o texto trunca com "…"
    em vez de esticar a caixa, para que caixas com pouco texto e caixas com
    cargo/nome/empresa preenchidos fiquem todas do mesmo tamanho. */
 .card .cn { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; width: 100%; }
-.card .cr, .card .ce { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden; width: 100%; }
+.card .ce { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden; width: 100%; }
+/* Nome do colaborador: sempre 1 linha; a fonte reduz sozinha (16→12px) para caber inteiro — ver fitNames() */
+.card .cr { display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; box-sizing: border-box;
+  background: #fff; color: var(--pill, #2f5b14) !important; border: 1px solid rgba(0,0,0,.15); border-radius: 8px; padding: 1px 8px; margin-top: 2px; }
 
 /* ── Lista de atividades dentro do cartão ── */
 .card .cat { list-style:none; margin:3px 0 0; padding:3px 0 0; border-top:1px solid rgba(0,0,0,.12); width:100%; }
 .card.green .cat { border-top-color: rgba(255,255,255,.35); }
-.card .cat li { font-size:8.5px; line-height:1.35; text-align:left; padding-left:8px; position:relative; word-break:break-word; }
+.card .cat li { font-size:12px; line-height:1.35; text-align:left; padding-left:8px; position:relative; word-break:break-word; }
 .card .cat li::before { content:"•"; position:absolute; left:0; }
 .card.green .cat li { color: rgba(255,255,255,.92); }
 .card.gray  .cat li { color: #555; }
@@ -280,7 +283,7 @@ body { font-family: Arial, sans-serif; background: #e8e8e8; color: #333; }
 /* Drag ghost */
 #drag-ghost {
   position:fixed; pointer-events:none; z-index:9000; border-radius:18px; padding:6px 12px;
-  text-align:center; width:130px; min-height:46px; font-size:11px; font-weight:700;
+  text-align:center; width:170px; min-height:64px; font-size:15px; font-weight:700;
   display:none; align-items:center; justify-content:center;
   box-shadow:0 6px 20px rgba(0,0,0,.3); opacity:.85; transform:translate(-50%,-50%) rotate(2deg);
 }
@@ -430,6 +433,7 @@ body.view-only #toolbar h1:hover{text-decoration:none;}
 <div class="modal-bg" id="pdf-ov">
   <div class="modal-box">
     <h2>📄 Gerar PDF</h2>
+    <div class="mf"><label>Tamanho do papel</label><select id="pdf-paper"><option value="A4">A4 (297 × 210 mm)</option><option value="A3">A3 (420 × 297 mm)</option><option value="A2">A2 (594 × 420 mm)</option><option value="A1">A1 (841 × 594 mm)</option><option value="A0">A0 (1189 × 841 mm)</option></select></div>
     <div class="mf"><label>Orientação</label><select id="pdf-ori"><option value="landscape">Paisagem (recomendado)</option><option value="portrait">Retrato</option></select></div>
     <div class="mf"><label>Título</label><input id="pdf-title" value="Organograma"></div>
     <div class="mrow"><button class="tb or" onclick="doPDF()">🖨 Imprimir / Salvar PDF</button><button class="tb" onclick="closePDF()">Cancelar</button></div>
@@ -542,9 +546,9 @@ body.view-only #toolbar h1:hover{text-decoration:none;}
 
 <script>
 // ── Constants ──
-const NW=130, NH=70;
+const NW=170, NH=98;
 // Altura extra por atividade listada na caixa (a caixa cresce conforme necessário)
-const AT_LINE_H=11, AT_PAD=6;
+const AT_LINE_H=16, AT_PAD=6;
 function actCount(n){ if(typeof n==='string'){ const f=nodes.find(x=>x.id===n); n=f; } return (n&&Array.isArray(n.atividades))?n.atividades.length:0; }
 // H(n) = altura de layout efetiva do nó (aceita id ou objeto nó). Cresce com o número de atividades.
 // Usa a altura REAL medida no DOM (heightCache) quando disponível; senão, estima pela contagem de atividades.
@@ -821,6 +825,19 @@ function layout(){
   });
 }
 
+// Reduz a fonte do nome do colaborador até caber em 1 linha (mín. 12px)
+const NAME_FS_MAX=16, NAME_FS_MIN=12;
+function fitNames(root){
+  root.querySelectorAll('.card .cr').forEach(el=>{
+    // mede a largura natural da etiqueta (sem o limite de 100%) e compara com o espaço da caixa
+    const card=el.closest('.card'); const cs=getComputedStyle(card);
+    const avail=card.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-1;
+    let fs=NAME_FS_MAX; el.style.fontSize=fs+'px'; el.style.maxWidth='none';
+    while(el.getBoundingClientRect().width>avail && fs>NAME_FS_MIN){ fs-=0.5; el.style.fontSize=fs+'px'; }
+    el.style.maxWidth='';
+  });
+}
+
 // ── Render ──
 let cbtnMap={};
 function render(){
@@ -965,7 +982,8 @@ function render(){
 
     const card=document.createElement('div');
     card.className=`card ${cls}${tcCls}${n.id===sel?' sel':''}`;
-    card.style.cssText=`position:absolute;left:0;top:0;width:${NW}px;height:${nH}px;${bg}`;
+    const pillC=(cls==='gray')?'#333333':drk(normHex(n.color)||'#6aba3a',.65);
+    card.style.cssText=`position:absolute;left:0;top:0;width:${NW}px;height:${nH}px;${bg}--pill:${pillC};`;
     card.title=[n.role,n.name,n.empresa].filter(Boolean).join(' — ');
     card.innerHTML=`<div class="cn">${top}</div>${bot}${atList}`;
     card.dataset.nid=n.id;
@@ -1026,6 +1044,8 @@ function render(){
     cbtnMap[k]=cb;
     cvs.appendChild(cb);
   });
+
+  fitNames(cvs);
 
   // ── Auto-correção: só se aplica a cargos com lista de atividades, cujo item
   // pode quebrar linha e precisar de mais espaço do que a fórmula estimou.
@@ -1376,11 +1396,34 @@ function delSel(){
   nodes=nodes.filter(n=>!rm.has(n.id)); sel=null; render();
 }
 
+// Limita o nº de linhas (como o line-clamp da tela) e põe "…" na última
+function clampLines(ctx,lines,max,maxW){
+  if(!max) return lines;
+  if(lines.length<=max && ctx.measureText(lines[lines.length-1]).width<=maxW) return lines;
+  const cut=lines.length>max; const out=lines.slice(0,max); let last=out[max-1]+(cut?'…':'');
+  if(!cut && ctx.measureText(last).width>maxW) last+='…';
+  while(last.length>1&&ctx.measureText(last).width>maxW) last=last.slice(0,-2)+'…';
+  out[max-1]=last; return out;
+}
+
+// Etiqueta branca do nome do colaborador (PDF/PNG) — baseline em by
+function drawNamePill(ctx,l,cx,by){
+  const fs=parseFloat((l.font.match(/([\d.]+)px/)||[0,16])[1]);
+  const tw=ctx.measureText(l.text).width, pw=tw+18, ph=fs+6;
+  const px=cx-pw/2, py=by-fs*0.78-3;
+  ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.15)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.roundRect(px,py,pw,ph,8); ctx.fill(); ctx.stroke();
+  ctx.fillStyle=l.color; ctx.textAlign='center'; ctx.fillText(l.text,cx,by);
+}
+
 // ── PDF ──
 function openPDF(){ document.getElementById('pdf-title').value=company.name||'Organograma'; document.getElementById('pdf-ov').classList.add('on'); }
 function closePDF(){ document.getElementById('pdf-ov').classList.remove('on'); }
 function doPDF(){
   const ori=document.getElementById('pdf-ori').value;
+  const paper=(document.getElementById('pdf-paper')||{}).value||'A4';
+  const PAPER_MM={A4:[297,210],A3:[420,297],A2:[594,420],A1:[841,594],A0:[1189,841]}; // [lado maior, lado menor]
+  const pmm=PAPER_MM[paper]||PAPER_MM.A4;
   const cvs=document.getElementById('canvas'), SL=document.getElementById('SL');
   const cvsW=cvs.offsetWidth||600, cvsH=cvs.offsetHeight||400;
   const pad=30;
@@ -1396,13 +1439,28 @@ function doPDF(){
   }
 
   const totalW=cvsW+pad*2, totalH=cvsH+pad*2+legendReserve;
-  const offC=document.createElement('canvas'); offC.width=totalW*2; offC.height=totalH*2;
-  const ctx=offC.getContext('2d'); ctx.scale(2,2);
+  // ── Página e escala (calculadas antes para definir a resolução da imagem) ──
+  const pxMm=96/25.4;
+  const pageWmm=ori==='landscape'?pmm[0]:pmm[1], pageHmm=ori==='landscape'?pmm[1]:pmm[0];
+  const pgW=pageWmm*pxMm-2*pxMm*10;
+  const pgH=pageHmm*pxMm-2*pxMm*10;
+  const hk=pmm[0]/297; // fator do cabeçalho: A4=1, A3≈1,4, A2=2, A1≈2,8, A0=4
+  const hasPJ=project.coName||project.clName||project.obra||project.contrato||project.data||project.resp||project.rev||project.coLogo||project.clLogo;
+  const hdrPx=hasPJ?Math.round(120*hk):0;
+  const orgAreaH=pgH-hdrPx-16;
+  // Em papel grande o organograma pode ser AMPLIADO (até 4×) para ocupar a folha
+  const sc=Math.min(4,pgW/totalW,orgAreaH/totalH);
+  const dispW=Math.round(totalW*sc), dispH=Math.round(totalH*sc);
+  // Resolução da imagem acompanha a ampliação (mín. 2×), limitada ao máximo do navegador
+  let RES=Math.max(2,Math.ceil(sc*2));
+  RES=Math.max(1,Math.min(RES,Math.floor(16000/totalW),Math.floor(16000/totalH),Math.floor(Math.sqrt(250e6/(totalW*totalH)))));
+  const offC=document.createElement('canvas'); offC.width=Math.round(totalW*RES); offC.height=Math.round(totalH*RES);
+  const ctx=offC.getContext('2d'); ctx.scale(RES,RES);
   ctx.fillStyle='#fff'; ctx.fillRect(0,0,totalW,totalH);
 
   function drawCard(ctx,el,bx,by){
     const lft=parseInt(el.style.left)||0, tp=parseInt(el.style.top)||0;
-    const w=el.offsetWidth||130, h=el.offsetHeight||46;
+    const w=el.offsetWidth||NW, h=el.offsetHeight||NH;
     const x=bx+lft, y=by+tp, r=Math.min(18,w/2,h/2);
     const isG=el.classList.contains('green');
     const isY=el.classList.contains('yellow');
@@ -1418,24 +1476,24 @@ function doPDF(){
     const catLis=el.querySelectorAll('.cat li');
     const tc=el.dataset.tc||'auto';
     const txtColor=tc==='black'?'#333':tc==='white'?'#fff':(isY?'#222':isG?'#fff':'#333');
-    const subColor=tc==='black'?'#777':tc==='white'?'rgba(255,255,255,.8)':(isY?'#444':isG?'rgba(255,255,255,.85)':'#666');
+    const subColor=tc==='black'?'#333':tc==='white'?'#fff':(isY?'#222':isG?'#fff':'#333');
     const coColor =tc==='black'?'#555':tc==='white'?'rgba(255,255,255,.85)':(isY?'#333':isG?'rgba(255,255,255,.85)':'#555');
     const catColor=tc==='black'?'#555':tc==='white'?'rgba(255,255,255,.92)':(isY?'#333':isG?'rgba(255,255,255,.92)':'#555');
     ctx.textAlign='center';
     const fields=[];
-    if(cn) fields.push({text:cn.textContent,color:txtColor,font:'bold 11px Arial',lineH:13});
-    if(cr) fields.push({text:cr.textContent,color:subColor,font:'italic 9.5px Arial',lineH:12});
-    if(ce) fields.push({text:ce.textContent,color:coColor,font:'600 10px Arial',lineH:12});
+    if(cn) fields.push({text:cn.textContent,color:txtColor,font:'bold 17px Arial',lineH:21,max:2});
+    if(cr) fields.push({text:cr.textContent,color:(el.style.getPropertyValue('--pill')||'#2f5b14').trim(),font:'600 '+(parseFloat(cr.style.fontSize)||NAME_FS_MAX)+'px Arial',lineH:25,max:1,noWrap:true,pill:true});
+    if(ce) fields.push({text:ce.textContent,color:coColor,font:'600 14px Arial',lineH:17,max:1});
     let allLines=[];
-    fields.forEach(f=>{ ctx.font=f.font; wrapT(ctx,f.text,w-16).forEach(l=>allLines.push({text:l,color:f.color,font:f.font,lineH:f.lineH})); });
+    fields.forEach(f=>{ ctx.font=f.font; clampLines(ctx,f.noWrap?[f.text]:wrapT(ctx,f.text,w-20),f.max,f.pill?w-38:w-20).forEach(l=>allLines.push({text:l,color:f.color,font:f.font,lineH:f.lineH,pill:f.pill})); });
     // ── Atividades (lista com marcador, alinhada à esquerda) ──
-    const catFont='8.5px Arial';
+    const catFont='12px Arial';
     let catLines=[];
     if(catLis.length){
       ctx.font=catFont;
       catLis.forEach(li=>{
         const wrapped=wrapT(ctx,li.textContent,w-28);
-        wrapped.forEach((l,idx)=>{ catLines.push({text:(idx===0?'• ':'  ')+l,font:catFont,lineH:11}); });
+        wrapped.forEach((l,idx)=>{ catLines.push({text:(idx===0?'• ':'  ')+l,font:catFont,lineH:16}); });
       });
     }
     const mainH=allLines.reduce((s,l)=>s+l.lineH,0);
@@ -1444,7 +1502,7 @@ function doPDF(){
     const totalH2=mainH+sepGap+catH;
     let ly=y+h/2-totalH2/2+6;
     ctx.textAlign='center';
-    allLines.forEach(l=>{ ctx.fillStyle=l.color; ctx.font=l.font; ctx.fillText(l.text,x+w/2,ly); ly+=l.lineH; });
+    allLines.forEach(l=>{ ctx.font=l.font; if(l.pill){ drawNamePill(ctx,l,x+w/2,ly+4); ly+=l.lineH; return; } ctx.fillStyle=l.color; ctx.fillText(l.text,x+w/2,ly); ly+=l.lineH; });
     if(catLines.length){
       ly+=2;
       ctx.strokeStyle=isG?'rgba(255,255,255,.35)':'rgba(0,0,0,.12)'; ctx.lineWidth=1;
@@ -1485,25 +1543,27 @@ function doPDF(){
 
   // ── Draw legend box in bottom-right of canvas ──
   function legendBoxSize(ctx, summary){
-    const BADGE_W = 28, SWATCH = 14, padX = 14, itemH = 22, titleH = 22, totalRowH = 22;
-    ctx.font = '10px Arial';
+    const BADGE_W = 36, SWATCH = 18, padX = 18, itemH = 28, titleH = 28, totalRowH = 28;
+    ctx.font = '13px Arial';
     const maxLabelW = summary.length ? Math.max(...summary.map(s => ctx.measureText(s.label).width), ctx.measureText('Total de cargos').width) : 0;
     const itemW = SWATCH + 8 + maxLabelW + 12 + BADGE_W;
-    const boxW  = padX * 2 + itemW;
-    const boxH  = 10 + titleH + summary.length * itemH + totalRowH + 10;
+    ctx.font = 'bold 14px Arial';
+    const titleW = ctx.measureText('Resumo por classificação').width;
+    const boxW  = padX * 2 + Math.max(itemW, titleW);
+    const boxH  = 13 + titleH + summary.length * itemH + totalRowH + 10;
     return { boxW, boxH };
   }
 
   function drawColorLegend(ctx, summary, canvasW, canvasH) {
     if(!summary.length) return;
 
-    const BADGE_W = 28;
-    const SWATCH  = 14;
-    const padX    = 14;
-    const padY    = 10;
-    const itemH   = 22;
-    const titleH  = 22;
-    const totalRowH = 22;  // same height as a normal item row
+    const BADGE_W = 36;
+    const SWATCH  = 18;
+    const padX    = 18;
+    const padY    = 13;
+    const itemH   = 28;
+    const titleH  = 28;
+    const totalRowH = 28;  // same height as a normal item row
 
     const { boxW, boxH } = legendBoxSize(ctx, summary);
     const bx     = canvasW - boxW - 16;
@@ -1523,9 +1583,9 @@ function doPDF(){
 
     // Title
     ctx.fillStyle = '#222';
-    ctx.font = 'bold 11px Arial';
+    ctx.font = 'bold 14px Arial';
     ctx.textAlign = 'left';
-    ctx.fillText('Resumo por classificação', bx + padX, by + padY + 12);
+    ctx.fillText('Resumo por classificação', bx + padX, by + padY + 16);
 
     // Divider under title
     ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 1;
@@ -1549,9 +1609,9 @@ function doPDF(){
 
       // Label
       ctx.fillStyle = '#333';
-      ctx.font = '10px Arial';
+      ctx.font = '13px Arial';
       ctx.textAlign = 'left';
-      ctx.fillText(item.label, sx + SWATCH + 8, midY + 3);
+      ctx.fillText(item.label, sx + SWATCH + 8, midY + 4);
 
       // Badge
       ctx.fillStyle = '#f0f0f0';
@@ -1559,9 +1619,9 @@ function doPDF(){
       ctx.lineWidth = 1;
       ctx.beginPath(); ctx.roundRect(badgeX, iy + 3, BADGE_W, itemH - 6, 4); ctx.fill(); ctx.stroke();
       ctx.fillStyle = '#333';
-      ctx.font = 'bold 10px Arial';
+      ctx.font = 'bold 13px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText(item.count, badgeX + BADGE_W / 2, midY + 3);
+      ctx.fillText(item.count, badgeX + BADGE_W / 2, midY + 4);
     });
 
     // Divider before total
@@ -1573,18 +1633,18 @@ function doPDF(){
     // Total row — same layout as items
     const totRowMidY = totDivY + totalRowH / 2;
     ctx.fillStyle = '#555';
-    ctx.font = '10px Arial';
+    ctx.font = '13px Arial';
     ctx.textAlign = 'left';
-    ctx.fillText('Total de cargos', bx + padX, totRowMidY + 3);
+    ctx.fillText('Total de cargos', bx + padX, totRowMidY + 4);
 
     ctx.fillStyle = '#e8e8e8';
     ctx.strokeStyle = '#ccc';
     ctx.lineWidth = 1;
     ctx.beginPath(); ctx.roundRect(badgeX, totDivY + 3, BADGE_W, totalRowH - 6, 4); ctx.fill(); ctx.stroke();
     ctx.fillStyle = '#222';
-    ctx.font = 'bold 10px Arial';
+    ctx.font = 'bold 13px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText(total, badgeX + BADGE_W / 2, totRowMidY + 3);
+    ctx.fillText(total, badgeX + BADGE_W / 2, totRowMidY + 4);
   }
 
   function drk2(hex, a){
@@ -1609,19 +1669,11 @@ function doPDF(){
     drawColorLegend(ctx, summary, totalW, totalH);
 
     const imgData=offC.toDataURL('image/png');
-    const pxMm=96/25.4;
-    const pgW=(ori==='landscape'?277:210)*pxMm-2*pxMm*10;
-    const pgH=(ori==='landscape'?210:297)*pxMm-2*pxMm*10;
-    const hasPJ=project.coName||project.clName||project.obra||project.contrato||project.data||project.resp||project.rev||project.coLogo||project.clLogo;
-    const hdrPx=hasPJ?120:0;
-    const orgAreaH=pgH-hdrPx-16;
-    const sc=Math.min(1,pgW/totalW,orgAreaH/totalH);
-    const dispW=Math.round(totalW*sc), dispH=Math.round(totalH*sc);
 
     // ── Project header HTML ──
     let hdrHTML='';
     if(hasPJ){
-      hdrHTML+='<table style="width:100%;border-collapse:collapse;border:1.5px solid #555;font-family:Arial,sans-serif;margin-bottom:12px;table-layout:fixed;">';
+      hdrHTML+='<div style="width:100%;zoom:'+hk+';"><table style="width:100%;border-collapse:collapse;border:1.5px solid #555;font-family:Arial,sans-serif;margin-bottom:12px;table-layout:fixed;">';
       hdrHTML+='<tr style="border-bottom:1px solid #bbb;">';
       // Client logo/name
       hdrHTML+='<td style="width:20%;border-right:1.5px solid #555;padding:8px;text-align:center;vertical-align:middle;">';
@@ -1651,10 +1703,10 @@ function doPDF(){
         fields.forEach(function(f2){ hdrHTML+='<div style="display:flex;align-items:baseline;gap:4px;"><span style="font-size:9px;color:#888;">'+f2[0]+':</span><span style="font-size:10px;font-weight:700;color:#111;">'+f2[1]+'</span></div>'; });
         hdrHTML+='</div></td></tr>';
       }
-      hdrHTML+='</table>';
+      hdrHTML+='</table></div>';
     }
 
-    const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}html,body{background:#fff;}@page{size:A4 '+ori+';margin:0;}body{padding:1cm;display:flex;flex-direction:column;align-items:center;width:100%;}</style></head><body>'+hdrHTML+'<div style="flex:1;display:flex;align-items:center;justify-content:center;width:100%;"><img src="'+imgData+'" style="width:'+dispW+'px;height:'+dispH+'px;display:block;"></div><script>window.onload=function(){setTimeout(function(){window.print();setTimeout(function(){window.close();},1500);},400);};<\/script></body></html>';
+    const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}html,body{background:#fff;}@page{size:'+pageWmm+'mm '+pageHmm+'mm;margin:0;}body{padding:1cm;display:flex;flex-direction:column;align-items:center;width:100%;}</style></head><body>'+hdrHTML+'<div style="flex:1;display:flex;align-items:center;justify-content:center;width:100%;"><img src="'+imgData+'" style="width:'+dispW+'px;height:'+dispH+'px;display:block;"></div><script>window.onload=function(){setTimeout(function(){window.print();setTimeout(function(){window.close();},1500);},400);};<\/script></body></html>';
     const pw=window.open('','_pdf_','width=1000,height=800'); pw.document.write(html); pw.document.close();
     closePDF();
   };
@@ -1672,7 +1724,7 @@ function exportPNG(){
   const ctx=offC.getContext('2d'); ctx.scale(2,2);
   function drawCard(ctx,el,bx,by){
     const lft=parseInt(el.style.left)||0, tp=parseInt(el.style.top)||0;
-    const w=el.offsetWidth||130, h=el.offsetHeight||46, x=bx+lft, y=by+tp, r=Math.min(18,w/2,h/2);
+    const w=el.offsetWidth||NW, h=el.offsetHeight||NH, x=bx+lft, y=by+tp, r=Math.min(18,w/2,h/2);
     const isG=el.classList.contains('green');
     const isY=el.classList.contains('yellow');
     const bg=isY?(el.style.background||'#f5c518'):isG?(el.style.background||'#6aba3a'):'#e0e0e0';
@@ -1682,20 +1734,20 @@ function exportPNG(){
     const catLis=el.querySelectorAll('.cat li');
     const tc=el.dataset.tc||'auto';
     const txtColor=tc==='black'?'#333':tc==='white'?'#fff':(isY?'#222':isG?'#fff':'#333');
-    const subColor=tc==='black'?'#777':tc==='white'?'rgba(255,255,255,.8)':(isY?'#444':isG?'rgba(255,255,255,.85)':'#666');
+    const subColor=tc==='black'?'#333':tc==='white'?'#fff':(isY?'#222':isG?'#fff':'#333');
     const coColor =tc==='black'?'#555':tc==='white'?'rgba(255,255,255,.85)':(isY?'#333':isG?'rgba(255,255,255,.85)':'#555');
     const catColor=tc==='black'?'#555':tc==='white'?'rgba(255,255,255,.92)':(isY?'#333':isG?'rgba(255,255,255,.92)':'#555');
     const fields=[];
-    if(cn) fields.push({text:cn.textContent,color:txtColor,font:'bold 11px Arial',lineH:13});
-    if(cr) fields.push({text:cr.textContent,color:subColor,font:'italic 9.5px Arial',lineH:12});
-    if(ce) fields.push({text:ce.textContent,color:coColor,font:'600 10px Arial',lineH:12});
+    if(cn) fields.push({text:cn.textContent,color:txtColor,font:'bold 17px Arial',lineH:21,max:2});
+    if(cr) fields.push({text:cr.textContent,color:(el.style.getPropertyValue('--pill')||'#2f5b14').trim(),font:'600 '+(parseFloat(cr.style.fontSize)||NAME_FS_MAX)+'px Arial',lineH:25,max:1,noWrap:true,pill:true});
+    if(ce) fields.push({text:ce.textContent,color:coColor,font:'600 14px Arial',lineH:17,max:1});
     let allLines=[];
-    fields.forEach(f=>{ ctx.font=f.font; measureWrapLines(ctx,f.text,w-16).forEach(l=>allLines.push({text:l,color:f.color,font:f.font,lineH:f.lineH})); });
-    const catFont='8.5px Arial';
+    fields.forEach(f=>{ ctx.font=f.font; clampLines(ctx,f.noWrap?[f.text]:measureWrapLines(ctx,f.text,w-20),f.max,f.pill?w-38:w-20).forEach(l=>allLines.push({text:l,color:f.color,font:f.font,lineH:f.lineH,pill:f.pill})); });
+    const catFont='12px Arial';
     let catLines=[];
     if(catLis.length){
       ctx.font=catFont;
-      catLis.forEach(li=>{ measureWrapLines(ctx,li.textContent,w-28).forEach((l,idx)=>{ catLines.push({text:(idx===0?'• ':'  ')+l,font:catFont,lineH:11}); }); });
+      catLis.forEach(li=>{ measureWrapLines(ctx,li.textContent,w-28).forEach((l,idx)=>{ catLines.push({text:(idx===0?'• ':'  ')+l,font:catFont,lineH:16}); }); });
     }
     const mainH=allLines.reduce((s,l)=>s+l.lineH,0);
     const sepGap=catLines.length?9:0;
@@ -1703,7 +1755,7 @@ function exportPNG(){
     const totalH2=mainH+sepGap+catH;
     let ly=y+h/2-totalH2/2+6;
     ctx.textAlign='center';
-    allLines.forEach(l=>{ ctx.fillStyle=l.color; ctx.font=l.font; ctx.fillText(l.text,x+w/2,ly); ly+=l.lineH; });
+    allLines.forEach(l=>{ ctx.font=l.font; if(l.pill){ drawNamePill(ctx,l,x+w/2,ly+4); ly+=l.lineH; return; } ctx.fillStyle=l.color; ctx.fillText(l.text,x+w/2,ly); ly+=l.lineH; });
     if(catLines.length){
       ly+=2;
       ctx.strokeStyle=isG?'rgba(255,255,255,.35)':'rgba(0,0,0,.12)'; ctx.lineWidth=1;
